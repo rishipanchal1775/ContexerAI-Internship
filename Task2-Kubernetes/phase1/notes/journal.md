@@ -102,3 +102,31 @@
 - **Deployment:** keeps the desired number of pod copies running and replaces failed ones.
 - **Service:** a stable address in front of pods, because pod IPs change. It finds pods using a label selector.
 - **Port flow:** browser to Service `port: 80` to `targetPort: 5000` to the app's container port 5000.
+
+## Failure and recovery
+
+| Command | What it does | Why I ran it |
+|---|---|---|
+| `kubectl get pods -n internship-rishi -w` | Streams pod changes live | Watch pods being terminated and created in real time |
+| `kubectl get rs -n internship-rishi` | Lists ReplicaSets | See the layer that keeps the pod count at the desired number |
+| `kubectl delete pod <pod-name> -n internship-rishi` | Deletes one pod | Test self-healing: the Deployment should replace it |
+| `kubectl delete pods --all -n internship-rishi` | Deletes all pods in the namespace | Test recovery when every pod is gone |
+| `kubectl describe deployment flask-webapp -n internship-rishi` | Shows Deployment status, replicas and events | See how the Deployment responded |
+| `kubectl apply -f 10-deployment.yaml` (replicas: 4, then 1, then 2) | Applies the changed replica count | Scale declaratively so the YAML stays the source of truth |
+| `kubectl scale deployment flask-webapp --replicas=3 -n internship-rishi` | Changes replicas directly in the cluster | Compare the imperative way with the declarative one |
+| `kubectl diff -f 10-deployment.yaml` | Shows differences between the file and the cluster | Show configuration drift after an imperative change |
+| `minikube stop` | Shuts the cluster down but keeps its data | Test what happens to availability when the cluster is off |
+| `minikube status` | Shows component state | Confirm Stopped or Running |
+| `docker ps -a \| grep minikube` | Lists all containers, including stopped | Show the Minikube container as Exited |
+| `kubectl get nodes` (while stopped) | Tries to reach the API server | Show the connection error: the control plane is down |
+| `minikube start` | Starts the existing cluster again | Test recovery: desired state is restored from etcd |
+| `minikube image ls \| grep simple-webapp-flask` | Lists images in Minikube | Confirm the loaded image survived the restart |
+
+### Concepts in my own words
+
+- **Self-healing:** the ReplicaSet keeps comparing the actual pod count with the desired count and creates replacements when a pod disappears.
+- **Desired vs actual state:** I declare what I want in YAML and Kubernetes keeps working to make reality match it.
+- **Why pod names and IPs change:** pods are replaceable, so I use a Service for a stable address.
+- **Scaling:** changing `replicas` makes Kubernetes add or remove pods to match.
+- **Declarative vs imperative scaling:** editing the YAML keeps the file as the source of truth, while `kubectl scale` causes drift.
+- **Stop vs delete:** stop keeps the cluster's data and objects, delete removes the cluster and everything in it.
