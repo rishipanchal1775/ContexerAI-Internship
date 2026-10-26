@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-webapp
+  namespace: internship-rishi
+  labels:
+    app: flask-webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-webapp
+  template:
+    metadata:
+      labels:
+        app: flask-webapp
+    spec:
+      containers:
+        - name: flask-webapp
+          image: simple-webapp-flask:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
