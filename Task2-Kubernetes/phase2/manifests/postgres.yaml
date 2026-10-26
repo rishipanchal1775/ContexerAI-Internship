@@ -59,13 +59,6 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 6
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data
