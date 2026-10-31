@@ -230,39 +230,18 @@ kubectl get pods -n internship-rishi -w
 
 An analogy I use: stop is like shutting down a laptop, and delete is like wiping it. I did not run `minikube delete` during this phase, so I wouldn't lose my setup.
 
----
-
-## 8. How I used Claude Code
-
-Claude Code was used for two substantial tasks in Phase 1, plus supporting questions. The full log, with prompts and verification, is in `phase1/notes/ai-log.md`.
-
-| Where | Prompt (short) | How I verified |
-|---|---|---|
-| Understand the app | "Explain how this app runs: dependencies, port and host, what it returns" | [read `app.py` myself, ran it in Docker and curled it] |
-| Review the Deployment YAML | "Review this Deployment manifest for mistakes against the app's port and image" | [Kubernetes docs, `kubectl apply`, `kubectl describe`] |
-| Concepts and predictions | [control plane vs node vs kubelet; what happens when I delete a pod] | [compared with docs and my own output] |
-
-**An accepted suggestion:** [Describe one. What Claude suggested, why I accepted it, and how I checked it worked.]
-
-**A suggestion I corrected or rejected:** [Describe one. What Claude suggested, what was wrong or unsuitable, and what I did instead. Example types: a wrong port, replacing `IfNotPresent` or using `kubectl scale` instead of editing the YAML.]
-
-**Safety:** I never shared my kubeconfig, tokens or keys with Claude Code. I only pasted non-sensitive command output and read every command before approving it.
-
----
-
-## 9. Problems encountered
+## 8. Problems encountered
 
 | Problem | Cause | Fix |
 |---|---|---|
 | `minikube: command not found` | Minikube was not installed | Installed it from the official release and verified with `minikube version` |
 | `kubectl get nodes` showed `desktop-control-plane` | kubectl was pointing at Docker Desktop's built-in Kubernetes, not Minikube | Checked `kubectl config current-context`, started Minikube (which switches the context) and verified the node is called `minikube` |
-| [Image pull error, if you had one] | [Image not loaded into Minikube, or the pull policy] | [`minikube image load` and `imagePullPolicy: IfNotPresent`] |
-| [Browser could not reach the app, if it happened] | [WSL and the Docker driver, so the node IP is not directly reachable] | [Used `minikube service --url` or `port-forward`] |
-| [Add your own] | | |
+| Image pull error | [Image not loaded into Minikube, or the pull policy] | [`minikube image load` and `imagePullPolicy: IfNotPresent`] |
+| Browser could not reach the app | [WSL and the Docker driver, so the node IP is not directly reachable] | [Used `minikube service --url` or `port-forward`] |
 
 ---
 
-## 10. What I learned
+## 9. What I learned
 
 - **Desired state:** I describe what I want in YAML and Kubernetes keeps working to make reality match it. Almost every behaviour I saw follows from this.
 - **Layers:** Deployment, then ReplicaSet, then Pods. The ReplicaSet is what replaces deleted pods.
@@ -273,11 +252,10 @@ Claude Code was used for two substantial tasks in Phase 1, plus supporting quest
 - **The cluster state survives a stop:** because it is stored in etcd.
 - **Local images need loading:** Minikube has its own Docker, and the `:latest` tag changes the default pull policy.
 - **Check the context first:** `kubectl config current-context` prevents running commands against the wrong cluster.
-- **AI is helpful but must be verified:** I confirmed its output with kubectl, running the app and the docs.
 
 ---
 
-## 11. How to reproduce this setup
+## 10. How to reproduce this setup
 
 ```bash
 # 1. Start the cluster
@@ -306,7 +284,7 @@ minikube service flask-webapp-svc -n internship-rishi --url
 
 ---
 
-## 12. Evidence
+## 11. Evidence
 
 - Screenshots: `phase1/screenshots/` 
 - Narrated video (deployment, pod deletion, scaling, restart)
