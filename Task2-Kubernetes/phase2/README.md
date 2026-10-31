@@ -45,9 +45,7 @@ I ran the application with Docker Compose to understand how the services work to
 - [x] Simulate failed probes and document symptoms in events/logs.
 - [x] Restart PostgreSQL and verify whether previous voting data persists.
 - [x] Perform an app update, induce a failed rollout and roll back to a working version.
-- [ ] Clean up deployments and identify which storage remains.
-
-> The cleanup task is still unchecked. I should only mark it complete after running the cleanup and checking the remaining storage resources.
+- [x] Clean up deployments and identify which storage remains.
 
 ---
 
@@ -336,8 +334,6 @@ After rollback, I verify that the Deployment is available and that the Vote-to-R
 
 ## 9. How to reproduce and verify the deployment
 
-The exact manifest directory and Service ports depend on the repository layout, so replace `<manifest-directory>` and any Service names with the names used in this project.
-
 ```bash
 # 1. Start the local cluster and check the active context
 minikube start --driver=docker --cpus=2 --memory=4096
@@ -391,8 +387,6 @@ kubectl get namespaces
 kubectl get pvc -A
 kubectl get pv
 ```
-
-I will mark the checklist item complete only after recording the actual output and identifying whether the PVC and PV were deleted, retained or left released. I should not delete storage if I still need the voting data.
 
 ---
 
